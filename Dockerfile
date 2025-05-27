@@ -8,9 +8,14 @@ RUN useradd -m coder
 USER coder
 WORKDIR /home/coder
 
-# Create extensions directory and install AI Commit extension
+# Configure Git default settings
+RUN git config --global user.name "Tony Tester" && \
+    git config --global user.email "testing@example.com"
+
+# Create extensions directory and install extensions
 RUN mkdir -p ~/.local/share/code-server/extensions && \
-    code-server --install-extension johhansantana.ai-commit-vscode
+    code-server --install-extension johhansantana.ai-commit-vscode && \
+    code-server --install-extension mhutchie.git-graph
 
 COPY --chown=coder:coder ./src ./workspace
 COPY --chown=coder:coder requirements.txt .
