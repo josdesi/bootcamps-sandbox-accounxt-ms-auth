@@ -2,11 +2,14 @@ import os
 from fastapi import FastAPI
 from fastapi.openapi.utils import get_openapi
 from fastapi.middleware.cors import CORSMiddleware
+from dotenv import load_dotenv
+
+load_dotenv()
 
 from app.controller import dummy_controller
 from app.controller import login_controller
 
-app = FastAPI()
+app = FastAPI(root_path="/proxy/8000")
 
 
 metadata = {
