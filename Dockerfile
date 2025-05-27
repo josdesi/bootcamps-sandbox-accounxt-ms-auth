@@ -1,29 +1,24 @@
-FROM codercom/code-server:latest
+FROM python:3.11-slim
 
+# Instala code-server y utilidades necesarias
+RUN apt-get update && apt-get install -y curl gnupg git && \
+    curl -fsSL https://code-server.dev/install.sh | sh
 
-RUN sudo apt-get update && \
-    sudo apt-get install -y wget build-essential libssl-dev zlib1g-dev \
-    libbz2-dev libreadline-dev libsqlite3-dev curl llvm \
-    libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev \
-    liblzma-dev git && \
-    wget https://www.python.org/ftp/python/3.11.8/Python-3.11.8.tgz && \
-    tar xvf Python-3.11.8.tgz && \
-    cd Python-3.11.8 && \
-    ./configure --enable-optimizations && \
-    make -j$(nproc) && \
-    sudo make altinstall && \
-    cd .. && \
-    rm -rf Python-3.11.8 Python-3.11.8.tgz
+# Crea usuario
+RUN useradd -m coder
 
-RUN sudo ln -s /usr/local/bin/pip3.11 /usr/local/bin/pip
-RUN sudo ln -s /usr/local/bin/python3.11 /usr/local/bin/python
+# Usa el usuario no root
+USER coder
+WORKDIR /home/coder
 
-WORKDIR /home/coder/app
-
-COPY requirements.txt .
-
+# Copia archivos y asegúrate de que pertenecen a 'coder'
+COPY --chown=coder:coder ./src ./workspace
+COPY --chown=coder:coder requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
+
+
+RUN chown -R coder:coder /home/coder/workspace
 
 EXPOSE 8080
 
-CMD ["code-server"]
+CMD ["sh", "-c", "code-server --auth password --bind-addr 0.0.0.0:8080 /home/coder/workspace"]
