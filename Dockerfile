@@ -8,6 +8,10 @@ RUN useradd -m coder
 USER coder
 WORKDIR /home/coder
 
+# Create extensions directory and install AI Commit extension
+RUN mkdir -p ~/.local/share/code-server/extensions && \
+    code-server --install-extension johhansantana.ai-commit-vscode
+
 COPY --chown=coder:coder ./src ./workspace
 COPY --chown=coder:coder requirements.txt .
 COPY --chown=coder:coder .env ./workspace/
