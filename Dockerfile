@@ -19,7 +19,7 @@ RUN mkdir -p ~/.local/share/code-server/extensions && \
 
 COPY --chown=coder:coder ./src ./workspace
 COPY --chown=coder:coder requirements.txt .
-COPY --chown=coder:coder .env ./workspace/
+
 RUN pip install --no-cache-dir -r requirements.txt
 
 RUN chown -R coder:coder /home/coder/workspace
